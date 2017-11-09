@@ -14,6 +14,7 @@ from shutil import rmtree
 
 #local imports
 from .extractnested import ExtractNested, FileExtension
+from axel import axel
 
 """
 This section adapted from https://github.com/keepitsimple/pyFTPclient
@@ -159,7 +160,8 @@ def remove_old_ftp_downloads(folder):
 def download_and_extract_ftp(download_dir, file_to_download, 
                              ftp_host, ftp_login, 
                              ftp_passwd, ftp_directory,
-                             remove_past_downloads=True):
+                             remove_past_downloads=True,
+			     accelerate_download=False):
                                  
     """
     Downloads and extracts file from FTP server
@@ -185,7 +187,14 @@ def download_and_extract_ftp(download_dir, file_to_download,
             unzip_file = False
             if not os.path.exists(local_path) and not os.path.exists(local_dir):
                 print("Downloading from ftp site: {0}".format(file_to_download))
-                unzip_file = ftp_client.download_file(file_to_download, local_path)
+                
+		#switching download to axel - download accelerator
+		if (accelerate_download):
+		    unzip_file = axel("ftp://{0}:{1}@{3}/{4}/{5}".format(ftp_login, ftp_passwd, ftp_host, \
+                                        ftp_directory, file_to_download), output_path=local_path)
+		else:
+		    unzip_file = ftp_client.download_file(file_to_download, local_path)
+		
             else:
                 print('{0} already exists. Skipping download ...'.format(file_to_download))
             #extract from tar.gz
