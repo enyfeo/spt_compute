@@ -190,7 +190,7 @@ def download_and_extract_ftp(download_dir, file_to_download,
                 
 		#switching download to axel - download accelerator
 		if (accelerate_download):
-		    unzip_file = axel("ftp://{0}:{1}@{3}/{4}/{5}".format(ftp_login, ftp_passwd, ftp_host, \
+		    unzip_file = axel("ftp://{0}:{1}@{2}/{3}/{4}".format(ftp_login, ftp_passwd, ftp_host, \
                                         ftp_directory, file_to_download), output_path=local_path)
 		else:
 		    unzip_file = ftp_client.download_file(file_to_download, local_path)
