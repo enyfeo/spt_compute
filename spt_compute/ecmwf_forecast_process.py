@@ -135,8 +135,9 @@ def run_ecmwf_forecast_process(rapid_executable_location,  # path to RAPID execu
                                geoserver_password="",  # password for geoserver
                                mp_mode='htcondor',  # valid options are htcondor and multiprocess,
                                mp_execute_directory="",  # required if using multiprocess mode
-			       accelerate_download=False # set to true if server is capable of accelerating download
-                              ):
+			       accelerate_download=False, # set to true if server is capable of accelerating download
+                               num_connections=10
+			      ):
     """
     This it the main ECMWF RAPID forecast process
     """
@@ -282,7 +283,7 @@ def run_ecmwf_forecast_process(rapid_executable_location,  # path to RAPID execu
                                                             ftp_host, ftp_login,
                                                             ftp_passwd, ftp_directory,
                                                             delete_past_ecmwf_forecasts,
-							    accelerate_download=accelerate_download)
+							    accelerate_download, num_connections)
 
                 # get list of forecast files
                 ecmwf_forecasts = glob(os.path.join(ecmwf_folder, '*.runoff.%s*nc' % region))

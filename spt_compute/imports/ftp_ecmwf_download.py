@@ -14,7 +14,8 @@ from shutil import rmtree
 
 #local imports
 from .extractnested import ExtractNested, FileExtension
-from axel import axel
+#from axel import axel
+import subprocess
 
 """
 This section adapted from https://github.com/keepitsimple/pyFTPclient
@@ -161,7 +162,8 @@ def download_and_extract_ftp(download_dir, file_to_download,
                              ftp_host, ftp_login, 
                              ftp_passwd, ftp_directory,
                              remove_past_downloads=True,
-			     accelerate_download=False):
+			     accelerate_download=False,
+			     num_connections=10):
                                  
     """
     Downloads and extracts file from FTP server
@@ -189,9 +191,15 @@ def download_and_extract_ftp(download_dir, file_to_download,
                 print("Downloading from ftp site: {0}".format(file_to_download))
                 
 		#switching download to axel - download accelerator
-		if (accelerate_download):
-		    unzip_file = axel("ftp://{0}:{1}@{2}/{3}/{4}".format(ftp_login, ftp_passwd, ftp_host, \
-                                        ftp_directory, file_to_download), output_path=local_path)
+		if accelerate_download:
+		    #unzip_file = axel("ftp://{0}:{1}@{2}/{3}/{4}".format(ftp_login, ftp_passwd, ftp_host, \
+                    #                    ftp_directory, file_to_download), output_path=local_path)
+		    unzip_file = subprocess.check_output([
+			"axel", 
+			"ftp://{0}:{1}@{2}/{3}/{4}".format(ftp_login, ftp_passwd, ftp_host, ftp_directory, 
+							   file_to_download), 
+			"--output={0}".format(local_path), 
+			"--num-connections={0}".format(num_connections)])
 		else:
 		    unzip_file = ftp_client.download_file(file_to_download, local_path)
 		
