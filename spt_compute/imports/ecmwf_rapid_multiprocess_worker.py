@@ -9,6 +9,7 @@
 
 import datetime
 import os
+from glob import glob
 from RAPIDpy import RAPID
 from RAPIDpy.postprocess import ConvertRAPIDOutputToCF
 from shutil import move, rmtree
@@ -95,15 +96,22 @@ def ecmwf_rapid_multiprocess_worker(node_path, rapid_input_directory,
     qinit_file = ""
     BS_opt_Qinit = False
     if(init_flow):
-        #check for qinit file
-	#change hour to 12 if running twice a day, change to 24 if running once a day
-        past_date = (datetime.datetime.strptime(forecast_date_timestep[:11],"%Y%m%d.%H") - \
-                     datetime.timedelta(hours=24)).strftime("%Y%m%dt%H")
-        qinit_file = os.path.join(rapid_input_directory, 'Qinit_%s.csv' % past_date)
-        BS_opt_Qinit = qinit_file and os.path.exists(qinit_file)
+        #look for qinit files for the past 3 days; try seasonal average file if not
+        for day in [24,48,72]:
+            past_date = (datetime.datetime.strptime(forecast_date_timestep[:11],"%Y%m%d.%H") - \
+                         datetime.timedelta(hours=day)).strftime("%Y%m%dt%H")
+            qinit_file = os.path.join(rapid_input_directory, 'Qinit_%s.csv' % past_date)
+            BS_opt_Qinit = qinit_file and os.path.exists(qinit_file)
+            if BS_opt_Qinit:
+                break
         if not BS_opt_Qinit:
-            print("Error: {0} not found. Not initializing ...".format(qinit_file))
-            qinit_file = ""
+            print("Qinit file not found. Trying to initialize from Seasonal Averages ...")
+            try:
+                qinit_file = glob(os.path.join(rapid_input_directory, 'seasonal_qinit*.csv'))[0]
+                BS_opt_Qinit = qinit_file and os.path.exists(qinit_file)
+            except:
+                print("Error: {0} not found. Not initializing ...".format(qinit_file))
+                qinit_file = ""
 
             
     try:
