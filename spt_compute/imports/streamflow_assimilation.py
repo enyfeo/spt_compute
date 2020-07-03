@@ -246,17 +246,17 @@ class StreamNetworkInitializer(object):
                                 if ensemble_index == 52:
                                     if time_length == 125:
                                         data_values_2d_array = predicted_qout_nc.get_qout_index(comid_index_list, 
-                                                                                                time_index=12)
+                                                                                                time_index=24)
                                     else:
                                         data_values_2d_array = predicted_qout_nc.get_qout_index(comid_index_list, 
-                                                                                                time_index=2)
+                                                                                                time_index=4)
                                 else:
                                     if time_length == 85:
                                         data_values_2d_array = predicted_qout_nc.get_qout_index(comid_index_list, 
-                                                                                                time_index=4)
+                                                                                                time_index=8)
                                     else:
                                         data_values_2d_array = predicted_qout_nc.get_qout_index(comid_index_list, 
-                                                                                                time_index=2)
+                                                                                                time_index=4)
                     except Exception:
                         print("Invalid ECMWF forecast file {0}".format(forecasted_streamflow_file))
                         continue
