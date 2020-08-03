@@ -21,6 +21,7 @@ import netCDF4 as NET
 import numpy as NUM
 import csv
 from io import open
+import os
 
 class CreateInflowFileFromECMWFRunoff(object):
     def __init__(self):
@@ -51,7 +52,7 @@ class CreateInflowFileFromECMWFRunoff(object):
         vars_oi_index = None
 
         data_nc = NET.Dataset(in_nc)
-        
+
         dims = list(data_nc.dimensions)
         if dims not in self.dims_oi:
             raise Exception(self.errorMessages[1])
@@ -166,6 +167,11 @@ class CreateInflowFileFromECMWFRunoff(object):
                 size_time = self.length_time_opt["HighRes-6hr"]
 
         size_streamID = len(set(dict_list[self.header_wt[0]]))
+
+        try:
+            os.makedirs(os.path.dirname(out_nc))
+        except OSError:
+            pass
 
         # Create output inflow netcdf data
         # data_out_nc = NET.Dataset(out_nc, "w") # by default format = "NETCDF4"
